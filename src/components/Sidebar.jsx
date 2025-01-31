@@ -1,7 +1,6 @@
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import {
   Sidebar,
-  SidebarTrigger,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
@@ -40,12 +39,14 @@ const items = [
 ];
 
 export default function SidebarComponent() {
+
   return (
     <Sidebar collapsible="icon">
-      <SidebarTrigger />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xl text-black">Dashboard</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xl text-black">
+            Dashboard
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

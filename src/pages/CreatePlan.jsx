@@ -1,11 +1,21 @@
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
-import { Label } from "../components/ui/label"
-import { Checkbox } from "../components/ui/checkbox"
+import { useState } from "react";
+import axios from "axios";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Checkbox } from "../components/ui/checkbox";
+import { useToast } from "../hooks/use-toast";
 
 export default function CreatePlan() {
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+  const { toast } = useToast();
+  const accessToken = sessionStorage.getItem("accessToken");
   const [plan, setPlan] = useState({
     id: "",
     period: "",
@@ -16,17 +26,42 @@ export default function CreatePlan() {
       description: "",
       tax_inclusive: false,
     },
-    notes: "",
-  })
+    notes: [],
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Submitted plan:", plan)
-    // Here you would typically make an API call to create the plan
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { id, period, ...planData } = plan;
+    console.log("Submitted plan:", planData);
+
+    try {
+      const response = await axios.post(
+        `${baseUrl}/pin_manager/create_plan`,
+        planData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      toast({
+        title: "Plan Created",
+        description: "Plan created successfully",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Plan Creation Failed",
+        description: "Plan creation failed. Please try again",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked } = e.target;
     setPlan((prevPlan) => ({
       ...prevPlan,
       [name]: type === "checkbox" ? checked : value,
@@ -34,8 +69,8 @@ export default function CreatePlan() {
         ...prevPlan.item,
         [name]: type === "number" ? Number.parseFloat(value) : value,
       },
-    }))
-  }
+    }));
+  };
 
   return (
     <div>
@@ -49,16 +84,34 @@ export default function CreatePlan() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="id">Plan ID</Label>
-                <Input id="id" name="id" value={plan.id} onChange={handleChange} required />
+                <Input
+                  id="id"
+                  name="id"
+                  value={plan.id}
+                  onChange={handleChange}
+                  required
+                />
               </div>
               <div>
                 <Label htmlFor="period">Period</Label>
-                <Input id="period" name="period" value={plan.period} onChange={handleChange} required />
+                <Input
+                  id="period"
+                  name="period"
+                  value={plan.period}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </div>
             <div>
               <Label htmlFor="name">Item Name</Label>
-              <Input id="name" name="name" value={plan.item.name} onChange={handleChange} required />
+              <Input
+                id="name"
+                name="name"
+                value={plan.item.name}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -74,7 +127,13 @@ export default function CreatePlan() {
               </div>
               <div>
                 <Label htmlFor="currency">Currency</Label>
-                <Input id="currency" name="currency" value={plan.item.currency} onChange={handleChange} required />
+                <Input
+                  id="currency"
+                  name="currency"
+                  value={plan.item.currency}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </div>
             <div>
@@ -93,14 +152,22 @@ export default function CreatePlan() {
                 name="tax_inclusive"
                 checked={plan.item.tax_inclusive}
                 onCheckedChange={(checked) =>
-                  setPlan((prevPlan) => ({ ...prevPlan, item: { ...prevPlan.item, tax_inclusive: checked === true } }))
+                  setPlan((prevPlan) => ({
+                    ...prevPlan,
+                    item: { ...prevPlan.item, tax_inclusive: checked === true },
+                  }))
                 }
               />
               <Label htmlFor="tax_inclusive">Tax Inclusive</Label>
             </div>
             <div>
               <Label htmlFor="notes">Notes</Label>
-              <Input id="notes" name="notes" value={plan.notes} onChange={handleChange} />
+              <Input
+                id="notes"
+                name="notes"
+                value={plan.notes}
+                onChange={handleChange}
+              />
             </div>
             <Button type="submit" className="w-full">
               Create Plan
@@ -109,6 +176,5 @@ export default function CreatePlan() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

@@ -14,7 +14,6 @@ export default function LoginPage() {
         email,
         password,
       });
-      // console.log(response.data);
       sessionStorage.setItem("accessToken", response.data.accessToken);
       toast({
         title: "Login Successful",
