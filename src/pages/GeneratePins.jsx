@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -8,6 +8,13 @@ import {
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue
+} from "../components/ui/select";
 import { useToast } from "../hooks/use-toast";
 import axios from "axios";
 
@@ -20,6 +27,29 @@ export default function GeneratePins() {
     count: 10,
     plan_id: "",
   });
+  const [plans, setPlans] = useState([]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/pin_manager/view_plan`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setPlans(response.data);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          status: "error",
+        });
+        console.error("API error:", error);
+      }
+    };
+
+    fetchPlans();
+  }, [baseUrl, accessToken, toast]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,13 +122,26 @@ export default function GeneratePins() {
             </div>
             <div>
               <Label htmlFor="plan_id">Plan ID</Label>
-              <Input
+              <Select
                 id="plan_id"
                 name="plan_id"
                 value={pinData.plan_id}
-                onChange={handleChange}
+                onValueChange={(value) =>
+                  setPinData((prevData) => ({ ...prevData, plan_id: value }))
+                }
                 required
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a plan" />
+                </SelectTrigger>
+                <SelectContent>
+                  {plans.map((plan) => (
+                    <SelectItem key={plan.id} value={plan.id}>
+                      {plan.id}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <Button type="submit" className="w-full">
               Generate PINs

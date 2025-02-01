@@ -10,12 +10,20 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Checkbox } from "../components/ui/checkbox";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "../components/ui/select";
 import { useToast } from "../hooks/use-toast";
 
 export default function CreatePlan() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
   const { toast } = useToast();
   const accessToken = sessionStorage.getItem("accessToken");
+  
   const [plan, setPlan] = useState({
     id: "",
     period: "",
@@ -32,6 +40,8 @@ export default function CreatePlan() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { id, period, ...planData } = plan;
+    planData.id = id;
+    planData.period = period; 
     console.log("Submitted plan:", planData);
 
     try {
@@ -45,6 +55,17 @@ export default function CreatePlan() {
           },
         }
       );
+      setPlan({
+        id: "",
+        period: "",
+        item: {
+          name: "",
+          amount: 0,
+          currency: "INR",
+          description: "",
+          tax_inclusive: false,
+        },
+      })
       toast({
         title: "Plan Created",
         description: "Plan created successfully",
@@ -72,6 +93,13 @@ export default function CreatePlan() {
     }));
   };
 
+  const handlePeriodChange = (value) => {
+    setPlan((prevPlan) => ({
+      ...prevPlan,
+      period: value,
+    }));
+  };
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Create Plan</h1>
@@ -94,13 +122,15 @@ export default function CreatePlan() {
               </div>
               <div>
                 <Label htmlFor="period">Period</Label>
-                <Input
-                  id="period"
-                  name="period"
-                  value={plan.period}
-                  onChange={handleChange}
-                  required
-                />
+                <Select value={plan.period} onValueChange={handlePeriodChange}>
+                  <SelectTrigger id="period">
+                    <SelectValue placeholder="Select period" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Yearly">Yearly</SelectItem>
+                    <SelectItem value="Monthly">Monthly</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div>

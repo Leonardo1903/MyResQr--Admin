@@ -40,7 +40,7 @@ export default function PendingRequests() {
         `${baseUrl}/dealer/request-approval/`,
         {
           request_id: id,
-          action: action === "accept" ? "approve" : "deny",
+          action: action === "accept" ? "approve" : "reject",
         },
         {
           headers: {
@@ -63,21 +63,25 @@ export default function PendingRequests() {
     <div>
       <h1 className="text-3xl font-bold mb-6">Pending Requests</h1>
       <div className="space-y-6">
-        {pendingRequests.map((request) => (
-          <Card key={request.id} onClick={() => setSelectedRequest(request)}>
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center">
-                <span>{request.dealership_name}</span>
-                <Badge>{request.status}</Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Submitted at: {new Date(request.submitted_at).toLocaleString()}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        {pendingRequests.length === 0 ? (
+          <p>No pending requests</p>
+        ) : (
+          pendingRequests.map((request) => (
+            <Card key={request.id} onClick={() => setSelectedRequest(request)}>
+              <CardHeader>
+                <CardTitle className="flex justify-between items-center">
+                  <span>{request.dealership_name}</span>
+                  <Badge>{request.status}</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Submitted at: {new Date(request.submitted_at).toLocaleString()}
+                </p>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       {selectedRequest && (
@@ -180,7 +184,7 @@ export default function PendingRequests() {
                   Deny
                 </Button>
                 <Button
-                  onClick={() => handleAction(selectedRequest.id, "deny")}
+                  onClick={() => handleAction(selectedRequest.id, "reject")}
                   className="bg-green-600 text-white hover:bg-green-700"
                 >
                   Accept
