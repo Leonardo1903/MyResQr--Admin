@@ -8,6 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "../components/ui/sidebar";
 
 const items = [
@@ -42,6 +43,7 @@ export default function SidebarComponent() {
 
   return (
     <Sidebar collapsible="icon">
+      <SidebarTrigger />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-xl text-black">

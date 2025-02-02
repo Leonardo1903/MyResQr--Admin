@@ -24,7 +24,7 @@ export default function GeneratePins() {
   const accessToken = sessionStorage.getItem("accessToken");
   const [pinData, setPinData] = useState({
     start: 10000000,
-    count: 10,
+    count: "",
     plan_id: "",
   });
   const [plans, setPlans] = useState([]);
@@ -85,7 +85,7 @@ export default function GeneratePins() {
     const { name, value } = e.target;
     setPinData((prevData) => ({
       ...prevData,
-      [name]: name === "count" ? Number.parseInt(value) : value,
+      [name]: name === "count" || name === "start" ? Number.parseInt(value) : value,
     }));
   };
 
