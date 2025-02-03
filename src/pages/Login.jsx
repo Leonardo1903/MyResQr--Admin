@@ -14,6 +14,16 @@ export default function LoginPage() {
         email,
         password,
       });
+
+      if (response.data.role !== "admin") {
+        toast({
+          title: "You are not authorized",
+          description: "You are not authorized to access this page",
+        });
+        window.location.href = "http://dealer.myresqr.life";
+        return;
+      }
+
       sessionStorage.setItem("accessToken", response.data.accessToken);
       toast({
         title: "Login Successful",
